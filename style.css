@@ -16,7 +16,7 @@ button {
     min-width: 60px;
     min-height: 40px;
     max-height: 40px;
-    border-radius: 4px;
+    border-radius: 6px;
     border: 3px solid #1F2937;
     cursor: pointer;
 }   
@@ -29,8 +29,15 @@ button {
     gap: 10px;
 }
 
-.options {
+.options, .row {
     display: flex;
-    flex-flow: column-reverse;
     gap: 6px;
+}
+
+.options {
+    flex-flow: column-reverse;
+}
+
+.equal, .clear-entry, .all-clear {
+    flex-grow: 2;
 }
