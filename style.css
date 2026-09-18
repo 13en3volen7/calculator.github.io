@@ -60,12 +60,12 @@ button {
     min-height: 40px;
     max-height: 40px;
     font-size: 25px;
-    direction: rtl;
     border-radius: 6px;
     border: 3px solid #1F2937;
 }
 
 .content {
+    align-self: flex-end;
     margin-top: auto;
 }
 
