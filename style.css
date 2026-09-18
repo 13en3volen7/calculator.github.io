@@ -1,5 +1,15 @@
+@font-face {
+    font-family: "FiraCode Nerd Font Mono SemBd";
+    src: url("fonts/FiraCodeNFM-SemBd.woff2") format("woff2"),
+        url("fonts/FiraCodeNFM-SemBd.woff") format("woff");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 html, body {
     height: 100%;
+    font-family: "FiraCode Nerd Font Mono SemBd";
 }
 
 body {
@@ -15,6 +25,7 @@ button {
     display: inline-flex;
     justify-content: center;
     align-items: center;
+    font-family: inherit;
     font-weight: bold;
     color: #1F2937; 
     min-width: 60px;
