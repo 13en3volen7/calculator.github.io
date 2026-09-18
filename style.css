@@ -18,7 +18,7 @@ body {
     justify-content: center;
     align-items: center;
     margin: 0;
-    gap: 20px;
+    gap: 10px;
 }
 
 button {
@@ -27,6 +27,7 @@ button {
     align-items: center;
     font-family: inherit;
     font-weight: bold;
+    font-size: 18px;
     color: #1F2937; 
     min-width: 60px;
     min-height: 40px;
@@ -36,6 +37,10 @@ button {
     cursor: pointer;
 }   
 
+#header {
+    font-size: 26px;
+}
+
 #container {
     display: flex;
     flex-flow: column;
@@ -43,10 +48,16 @@ button {
     gap: 10px;
 }
 
+#footer {
+    font-size: 20px;
+}
+
 .display {
     flex: 1;
+    background-color: #E5E7EB;
     min-height: 40px;
     max-height: 40px;
+    border-radius: 6px;
     border: 3px solid #1F2937;
 }
 
