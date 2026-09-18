@@ -53,12 +53,20 @@ button {
 }
 
 .display {
+    display: flex;
+    flex-flow: column nowrap;
     flex: 1;
     background-color: #E5E7EB;
     min-height: 40px;
     max-height: 40px;
+    font-size: 25px;
+    direction: rtl;
     border-radius: 6px;
     border: 3px solid #1F2937;
+}
+
+.content {
+    margin-top: auto;
 }
 
 .options, .row {
