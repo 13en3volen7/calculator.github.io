@@ -106,7 +106,7 @@ function attachButtonEvents(containerDiv) {
                 contentDiv.textContent = result;
             }
 
-            const operatorName = className.split(" ").at(-1);
+            const operatorName = className.split("-").at(-1);
             const operatorUI = nameToSymbol(operatorName);
             lastOperator = nameToSymbol(operatorName, false);
             if (lastOperator !== "=") {

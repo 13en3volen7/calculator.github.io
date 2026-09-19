@@ -78,6 +78,6 @@ button {
     flex-flow: column-reverse;
 }
 
-.equal, .clear-entry, .all-clear {
+.operator-equal, .clear-entry, .all-clear {
     flex-grow: 1;
 }
