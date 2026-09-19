@@ -125,9 +125,10 @@ function attachButtonEvents(containerDiv) {
                 
                 case "del":
                     const lastChar = contentDiv.textContent.at(-1);
-                    const isAnOperator = isNaN(+lastChar) && lastChar !== ".";
-                    if (isAnOperator) {
-                        lastOperator = "";
+                    const isAnOperator = (char) => isNaN(+char) && char !== ".";
+                    if (isAnOperator(lastChar)) {
+                        const beforeLastChar = contentDiv.textContent.at(-2);
+                        lastOperator = isAnOperator(beforeLastChar) ? beforeLastChar : "";
                     } else {
                         updateNumberVariables(fn => fn.slice(0, -1), sn => sn.slice(0, -1));
                     }
