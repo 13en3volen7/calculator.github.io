@@ -8,23 +8,29 @@ function isNumeric(string) {
     return typeof string === "string" && !isNaN(string) && !isNaN(parseFloat(string));
 }
 
+function round(num, decimalPlaces = 0) {
+    const p = Math.pow(10, decimalPlaces);
+    const n = (num * p) * (1 + Number.EPSILON);
+    return Math.round(n) / p;
+}
+
 function add(a, b) {
-    return a + b;
+    return round(a + b, 2);
 }
 
 function subtract(a, b) {
-    return a - b;
+    return round(a - b, 2);
 }
 
 function multiply(a, b) {
-    return a * b;
+    return round(a * b, 2);
 }
 
 function divide(a, b) {
     if (b === 0) {
         return "MATH ERROR";
     }
-    return a / b;
+    return round(a / b, 2);
 }
 
 function operate(a, b, op) {
