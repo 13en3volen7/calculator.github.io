@@ -49,6 +49,8 @@ function operate(a, b, op) {
 
 function attachButtonEvents(containerDiv) {
     const optionsDiv = containerDiv.querySelector(".options");
+    const displayDiv = containerDiv.querySelector(".display");
+    const contentDiv = displayDiv.firstElementChild;
     let firstNumber = "";
     let secondNumber = "";
     let lastOperator = "";
@@ -79,8 +81,6 @@ function attachButtonEvents(containerDiv) {
 
     optionsDiv.addEventListener("click", function (event) {
         const target = event.target;
-        const displayDiv = containerDiv.querySelector(".display");
-        const contentDiv = displayDiv.firstElementChild;
         const className = target.className;
 
         function wipeData() {
