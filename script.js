@@ -65,8 +65,8 @@ function attachButtonEvents(containerDiv) {
 
     function updateNumberVariables(firstNumberCallback, secondNumberCallback, forceUpdate = false) {
         if (!forceUpdate) {
-            let firstNumberNotInputted = !lastOperator;
-            if (firstNumberNotInputted) {
+            let editingFirstNumber = !lastOperator || lastOperator === "=";
+            if (editingFirstNumber) {
                 firstNumber = firstNumberCallback(firstNumber);
             } else {
                 secondNumber = secondNumberCallback(secondNumber);
