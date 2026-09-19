@@ -2,6 +2,7 @@ function initialize() {
     const containerDiv = document.querySelector("#container");
 
     attachButtonEvents(containerDiv);
+    attachKeyboardEvents(containerDiv);
 }
 
 function isNumeric(string) {
@@ -147,6 +148,61 @@ function attachButtonEvents(containerDiv) {
 
                 case "all-clear":
                     wipeData();
+                    break;
+            }
+        }
+    });
+}
+
+function attachKeyboardEvents(containerDiv) {
+    const optionsDiv = containerDiv.querySelector(".options");
+    const invoke = (element, eventType, customEvent) => {
+        const e = customEvent ?? new Event(eventType, { bubbles: true });
+        element.dispatchEvent(e);
+    }
+
+    document.body.addEventListener("keydown", (event) => {
+        console.log(`key=${event.key},code=${event.code}`);
+        const key = event.key;
+        if (!isNaN(+key)) {
+            invoke(optionsDiv.querySelector(`.number-${key}`), "click");
+        } else {
+            switch (key) {
+                case "+":
+                    invoke(optionsDiv.querySelector(".operator-plus"), "click");
+                    break;
+
+                case "-":
+                    invoke(optionsDiv.querySelector(".operator-minus"), "click");
+                    break;
+
+                case "*":
+                    invoke(optionsDiv.querySelector(".operator-multiply"), "click");
+                    break;
+
+                case "/":
+                    invoke(optionsDiv.querySelector(".operator-divide"), "click");
+                    break;
+
+                case "=":
+                case "Enter":
+                    invoke(optionsDiv.querySelector(".operator-equal"), "click");
+                    break;
+
+                case ".":
+                    invoke(optionsDiv.querySelector(".dot"), "click");
+                    break;
+
+                case "Backspace":
+                    invoke(optionsDiv.querySelector(".del"), "click");
+                    break;
+
+                case "Escape":
+                    invoke(optionsDiv.querySelector(".all-clear"), "click");
+                    break;
+
+                case "Delete":
+                    invoke(optionsDiv.querySelector(".clear-entry"), "click");
                     break;
             }
         }
