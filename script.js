@@ -45,17 +45,17 @@ function attachButtonEvents(containerDiv) {
         }
     }
 
-    function updateNumberVariables(firstNumberCallback, secondNumberCallback, force = false) {
-        if (!force) {
+    function updateNumberVariables(firstNumberCallback, secondNumberCallback, forceUpdate = false) {
+        if (!forceUpdate) {
             let firstNumberNotInputted = !operatorInner;
             if (firstNumberNotInputted) {
-                firstNumber = firstNumberCallback();
+                firstNumber = firstNumberCallback(firstNumber);
             } else {
-                secondNumber = secondNumberCallback();
+                secondNumber = secondNumberCallback(secondNumber);
             }
         } else {
-            firstNumber = firstNumberCallback();
-            secondNumber = secondNumberCallback();
+            firstNumber = firstNumberCallback(firstNumber);
+            secondNumber = secondNumberCallback(secondNumber);
         }
     }
 
@@ -67,8 +67,7 @@ function attachButtonEvents(containerDiv) {
         const className = target.className;
 
         function wipeData() {
-            firstNumber = "";
-            secondNumber = "";
+            updateNumberVariables(() => "", () => "", true);
             operatorInner = "";
             contentDiv.textContent = "";
         }
@@ -79,7 +78,7 @@ function attachButtonEvents(containerDiv) {
             }
             const number = className.slice(-1);
             contentDiv.textContent += number;
-            updateNumberVariables(() => firstNumber + number, () => secondNumber + number);
+            updateNumberVariables(fn => fn + number, sn => sn + number);
         } else if (className.startsWith("operator")) {
             console.log(firstNumber, secondNumber, operatorInner);
             if (firstNumber && secondNumber && operatorInner) {
@@ -94,7 +93,7 @@ function attachButtonEvents(containerDiv) {
             if (operatorInner !== "=") {
                 if (!contentDiv.textContent.length) {
                     operatorInner = "";
-                    updateNumberVariables(() => firstNumber + operatorInner, () => {});
+                    updateNumberVariables(fn => fn + operatorInner, () => {});
                 }
                 contentDiv.textContent += operatorUI;
             }
@@ -102,12 +101,12 @@ function attachButtonEvents(containerDiv) {
             switch (className) {
                 case "dot":
                     contentDiv.textContent += ".";
-                    updateNumberVariables(() => firstNumber + ".", () => secondNumber + ".");
+                    updateNumberVariables(fn => fn + ".", sn => sn + ".");
                     break;
                 
                 case "clear-entry":
                     contentDiv.textContent = contentDiv.textContent.slice(0, -1);
-                    updateNumberVariables(() => firstNumber.slice(0, -1), () => secondNumber.slice(0, -1));
+                    updateNumberVariables(fn => fn.slice(0, -1), sn => sn.slice(0, -1));
                     break;
 
                 case "all-clear":
