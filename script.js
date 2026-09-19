@@ -119,7 +119,7 @@ function attachButtonEvents(containerDiv) {
             }
         } else {
             switch (className) {
-                case "dot":
+                case "decimal":
                     const appendDecimalInner = num => {
                         if (num.includes(".")) {
                             return num;
@@ -196,7 +196,7 @@ function attachKeyboardEvents(containerDiv) {
                     break;
 
                 case ".":
-                    invoke(optionsDiv.querySelector(".dot"), "click");
+                    invoke(optionsDiv.querySelector(".decimal"), "click");
                     break;
 
                 case "Backspace":
