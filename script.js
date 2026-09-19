@@ -100,6 +100,11 @@ function attachButtonEvents(containerDiv) {
             switch (className) {
                 case "dot":
                     contentDiv.textContent += ".";
+                    if (!operator) {
+                        firstNumber += ".";
+                    } else {
+                        secondNumber += ".";
+                    }
                     break;
                 
                 case "clear-entry":
