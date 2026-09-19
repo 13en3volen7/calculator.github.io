@@ -120,8 +120,14 @@ function attachButtonEvents(containerDiv) {
         } else {
             switch (className) {
                 case "dot":
-                    contentDiv.textContent += ".";
-                    updateNumberVariables(fn => fn + ".", sn => sn + ".");
+                    const appendDecimalInner = num => {
+                        if (num.includes(".")) {
+                            return num;
+                        }
+                        contentDiv.textContent += ".";
+                        return num + ".";
+                    }
+                    updateNumberVariables(appendDecimalInner, appendDecimalInner);
                     break;
                 
                 case "del":
