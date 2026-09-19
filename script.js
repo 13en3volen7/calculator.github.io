@@ -4,6 +4,10 @@ function initialize() {
     attachButtonEvents(containerDiv);
 }
 
+function isNumeric(string) {
+    return typeof string === "string" && !isNaN(string) && !isNaN(parseFloat(string));
+}
+
 function add(a, b) {
     return a + b;
 }
@@ -17,10 +21,18 @@ function multiply(a, b) {
 }
 
 function divide(a, b) {
+    if (b === 0) {
+        return "MATH ERROR";
+    }
     return a / b;
 }
 
 function operate(a, b, op) {
+    if (!isNumeric(a) || !isNumeric(b)) {
+        return "SYNTAX ERROR";
+    }
+    a = +a;
+    b = +b;
     switch (op) {
         case "+": return `${add(a, b)}`;
         case "-": return `${subtract(a, b)}`;
@@ -82,8 +94,10 @@ function attachButtonEvents(containerDiv) {
         } else if (className.startsWith("operator")) {
             console.log(firstNumber, secondNumber, lastOperator);
             if (firstNumber && secondNumber && lastOperator) {
-                const result = operate(+firstNumber, +secondNumber, lastOperator);
-                updateNumberVariables(() => result, () => "", true);
+                const result = operate(firstNumber, secondNumber, lastOperator);
+                if (!isNaN(+result)) {
+                    updateNumberVariables(() => result, () => "", true);
+                }
                 contentDiv.textContent = result;
             }
 
