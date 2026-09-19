@@ -92,8 +92,8 @@ function attachButtonEvents(containerDiv) {
             lastOperator = nameToSymbol(operatorName, false);
             if (lastOperator !== "=") {
                 if (!contentDiv.textContent.length) {
+                    updateNumberVariables(fn => fn + lastOperator, sn => sn, true);
                     lastOperator = "";
-                    updateNumberVariables(fn => fn + lastOperator, () => {});
                 }
                 contentDiv.textContent += operatorUI;
             }
