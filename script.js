@@ -79,7 +79,6 @@ function attachButtonEvents(containerDiv) {
 
     optionsDiv.addEventListener("click", function (event) {
         const target = event.target;
-        const containerDiv = target.closest("#container");
         const displayDiv = containerDiv.querySelector(".display");
         const contentDiv = displayDiv.firstElementChild;
         const className = target.className;
