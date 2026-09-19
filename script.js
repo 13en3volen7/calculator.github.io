@@ -23,9 +23,9 @@ function divide(a, b) {
 function operate(a, b, op) {
     switch (op) {
         case "+": return `${add(a, b)}`;
-        case "−": return `${subtract(a, b)}`;
-        case "×": return `${multiply(a, b)}`;
-        case "÷": return `${divide(a, b)}`;
+        case "-": return `${subtract(a, b)}`;
+        case "*": return `${multiply(a, b)}`;
+        case "/": return `${divide(a, b)}`;
     }
 }
 
@@ -33,23 +33,30 @@ function attachButtonEvents(containerDiv) {
     const optionsDiv = containerDiv.querySelector(".options");
     let firstNumber = "";
     let secondNumber = "";
-    let operator = "";
-    let firstNumberIsNegative = false;
+    let operatorInner = "";
     
-    function nameToSymbol(operatorName) {
+    function nameToSymbol(operatorName, ui = true) {
         switch (operatorName) {
             case "plus": return "+";
-            case "minus": return "−";
-            case "multiply": return "×";
-            case "divide": return "÷";
+            case "minus": return ui ? "−" : "-";
+            case "multiply": return ui ? "×" : "*";
+            case "divide": return ui ? "÷" : "/";
             case "equal": return "=";
         }
     }
 
-    function wipeData() {
-        firstNumber = "";
-        secondNumber = "";
-        operator = "";
+    function updateNumberVariables(firstNumberCallback, secondNumberCallback, force = false) {
+        if (!force) {
+            let firstNumberNotInputted = !operatorInner;
+            if (firstNumberNotInputted) {
+                firstNumber = firstNumberCallback();
+            } else {
+                secondNumber = secondNumberCallback();
+            }
+        } else {
+            firstNumber = firstNumberCallback();
+            secondNumber = secondNumberCallback();
+        }
     }
 
     optionsDiv.addEventListener("click", function (event) {
@@ -59,66 +66,52 @@ function attachButtonEvents(containerDiv) {
         const contentDiv = displayDiv.firstElementChild;
         const className = target.className;
 
+        function wipeData() {
+            firstNumber = "";
+            secondNumber = "";
+            operatorInner = "";
+            contentDiv.textContent = "";
+        }
+
         if (className.startsWith("number")) {
-            if (operator === "=") {
+            if (operatorInner === "=") {
                 wipeData();
-                contentDiv.textContent = "";
             }
             const number = className.slice(-1);
             contentDiv.textContent += number;
-            if (!operator) {
-                if (firstNumberIsNegative) {
-                    firstNumber = "-" + firstNumber;
-                    firstNumberIsNegative = false;
-                }
-                firstNumber += number;  
-            } else {
-                secondNumber += number;
-            }
+            updateNumberVariables(() => firstNumber + number, () => secondNumber + number);
         } else if (className.startsWith("operator")) {
-            console.log(firstNumber, secondNumber, operator);
-            if (firstNumber && secondNumber && operator) {
-                const result = operate(+firstNumber, +secondNumber, operator);
-                firstNumber = result;
-                secondNumber = "";
+            console.log(firstNumber, secondNumber, operatorInner);
+            if (firstNumber && secondNumber && operatorInner) {
+                const result = operate(+firstNumber, +secondNumber, operatorInner);
+                updateNumberVariables(() => result, () => "", true);
                 contentDiv.textContent = result;
             }
 
-            operator = nameToSymbol(className.split(" ").at(-1));
-            if (operator !== "=") {
-                contentDiv.textContent += operator;
-                if (contentDiv.textContent.length === 1) {
-                    if (operator === "+") {
-                        operator = "";
-                    } else if (operator === "−") {
-                        firstNumberIsNegative = true;
-                        operator = "";
-                    }
+            const operatorName = className.split(" ").at(-1);
+            const operatorUI = nameToSymbol(operatorName);
+            operatorInner = nameToSymbol(operatorName, false);
+            if (operatorInner !== "=") {
+                if (!contentDiv.textContent.length) {
+                    operatorInner = "";
+                    updateNumberVariables(() => firstNumber + operatorInner, () => {});
                 }
+                contentDiv.textContent += operatorUI;
             }
         } else {
             switch (className) {
                 case "dot":
                     contentDiv.textContent += ".";
-                    if (!operator) {
-                        firstNumber += ".";
-                    } else {
-                        secondNumber += ".";
-                    }
+                    updateNumberVariables(() => firstNumber + ".", () => secondNumber + ".");
                     break;
                 
                 case "clear-entry":
                     contentDiv.textContent = contentDiv.textContent.slice(0, -1);
-                    if (!operator) {
-                        firstNumber = firstNumber.slice(0, -1);
-                    } else {
-                        secondNumber = secondNumber.slice(0, -1);
-                    }
+                    updateNumberVariables(() => firstNumber.slice(0, -1), () => secondNumber.slice(0, -1));
                     break;
 
                 case "all-clear":
                     wipeData();
-                    contentDiv.textContent = "";
                     break;
             }
         }
