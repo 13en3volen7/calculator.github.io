@@ -123,9 +123,15 @@ function attachButtonEvents(containerDiv) {
                     updateNumberVariables(fn => fn + ".", sn => sn + ".");
                     break;
                 
-                case "clear-entry":
+                case "del":
+                    const lastChar = contentDiv.textContent.at(-1);
+                    const isAnOperator = isNaN(+lastChar) && lastChar !== ".";
+                    if (isAnOperator) {
+                        lastOperator = "";
+                    } else {
+                        updateNumberVariables(fn => fn.slice(0, -1), sn => sn.slice(0, -1));
+                    }
                     contentDiv.textContent = contentDiv.textContent.slice(0, -1);
-                    updateNumberVariables(fn => fn.slice(0, -1), sn => sn.slice(0, -1));
                     break;
 
                 case "all-clear":
