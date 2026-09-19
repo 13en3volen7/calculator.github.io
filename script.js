@@ -135,6 +135,16 @@ function attachButtonEvents(containerDiv) {
                     contentDiv.textContent = contentDiv.textContent.slice(0, -1);
                     break;
 
+                case "clear-entry":
+                    if (!lastOperator) {
+                        wipeData();
+                    } else {
+                        const secondNumberStartIndex = contentDiv.textContent.lastIndexOf(secondNumber);
+                        contentDiv.textContent = contentDiv.textContent.slice(0, secondNumberStartIndex);
+                        updateNumberVariables(fn => fn, () => "");
+                    }
+                    break;
+
                 case "all-clear":
                     wipeData();
                     break;
