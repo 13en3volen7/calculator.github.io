@@ -33,7 +33,7 @@ function attachButtonEvents(containerDiv) {
     const optionsDiv = containerDiv.querySelector(".options");
     let firstNumber = "";
     let secondNumber = "";
-    let operatorInner = "";
+    let lastOperator = "";
     
     function nameToSymbol(operatorName, ui = true) {
         switch (operatorName) {
@@ -47,7 +47,7 @@ function attachButtonEvents(containerDiv) {
 
     function updateNumberVariables(firstNumberCallback, secondNumberCallback, forceUpdate = false) {
         if (!forceUpdate) {
-            let firstNumberNotInputted = !operatorInner;
+            let firstNumberNotInputted = !lastOperator;
             if (firstNumberNotInputted) {
                 firstNumber = firstNumberCallback(firstNumber);
             } else {
@@ -68,32 +68,32 @@ function attachButtonEvents(containerDiv) {
 
         function wipeData() {
             updateNumberVariables(() => "", () => "", true);
-            operatorInner = "";
+            lastOperator = "";
             contentDiv.textContent = "";
         }
 
         if (className.startsWith("number")) {
-            if (operatorInner === "=") {
+            if (lastOperator === "=") {
                 wipeData();
             }
             const number = className.slice(-1);
             contentDiv.textContent += number;
             updateNumberVariables(fn => fn + number, sn => sn + number);
         } else if (className.startsWith("operator")) {
-            console.log(firstNumber, secondNumber, operatorInner);
-            if (firstNumber && secondNumber && operatorInner) {
-                const result = operate(+firstNumber, +secondNumber, operatorInner);
+            console.log(firstNumber, secondNumber, lastOperator);
+            if (firstNumber && secondNumber && lastOperator) {
+                const result = operate(+firstNumber, +secondNumber, lastOperator);
                 updateNumberVariables(() => result, () => "", true);
                 contentDiv.textContent = result;
             }
 
             const operatorName = className.split(" ").at(-1);
             const operatorUI = nameToSymbol(operatorName);
-            operatorInner = nameToSymbol(operatorName, false);
-            if (operatorInner !== "=") {
+            lastOperator = nameToSymbol(operatorName, false);
+            if (lastOperator !== "=") {
                 if (!contentDiv.textContent.length) {
-                    operatorInner = "";
-                    updateNumberVariables(fn => fn + operatorInner, () => {});
+                    lastOperator = "";
+                    updateNumberVariables(fn => fn + lastOperator, () => {});
                 }
                 contentDiv.textContent += operatorUI;
             }
