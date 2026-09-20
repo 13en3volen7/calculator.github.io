@@ -1,3 +1,5 @@
+const MAX_LENGTH = 16;
+
 function initialize() {
     const containerDiv = document.querySelector("#container");
 
@@ -80,6 +82,14 @@ function attachButtonEvents(containerDiv) {
         }
     }
 
+    function updateDisplayBox(callback) {
+        const preview = callback(contentDiv.textContent);
+        if (preview.length > MAX_LENGTH) {
+            return;
+        }
+        contentDiv.textContent = preview;
+    }
+
     optionsDiv.addEventListener("click", function (event) {
         const target = event.target;
         const className = target.className;
@@ -95,7 +105,7 @@ function attachButtonEvents(containerDiv) {
                 wipeData();
             }
             const number = className.slice(-1);
-            contentDiv.textContent += number;
+            updateDisplayBox((text) => text + number);
             updateNumberVariables(fn => fn + number, sn => sn + number);
         } else if (className.startsWith("operator")) {
             console.log(firstNumber, secondNumber, lastOperator);
@@ -104,7 +114,7 @@ function attachButtonEvents(containerDiv) {
                 if (!isNaN(+result)) {
                     updateNumberVariables(() => result, () => "", true);
                 }
-                contentDiv.textContent = result;
+                updateDisplayBox(() => result);
             }
 
             const operatorName = className.split("-").at(-1);
@@ -115,7 +125,7 @@ function attachButtonEvents(containerDiv) {
                     updateNumberVariables(fn => fn + lastOperator, sn => sn, true);
                     lastOperator = "";
                 }
-                contentDiv.textContent += operatorUI;
+                updateDisplayBox((text) => text + operatorUI);
             }
         } else {
             switch (className) {
@@ -124,7 +134,7 @@ function attachButtonEvents(containerDiv) {
                         if (num.includes(".")) {
                             return num;
                         }
-                        contentDiv.textContent += ".";
+                        updateDisplayBox((text) => text + ".");
                         return num + ".";
                     }
                     updateNumberVariables(appendDecimalInner, appendDecimalInner);
@@ -139,7 +149,7 @@ function attachButtonEvents(containerDiv) {
                     } else {
                         updateNumberVariables(fn => fn.slice(0, -1), sn => sn.slice(0, -1));
                     }
-                    contentDiv.textContent = contentDiv.textContent.slice(0, -1);
+                    updateDisplayBox((text) => text.slice(0, -1));
                     break;
 
                 case "clear-entry":
@@ -147,7 +157,7 @@ function attachButtonEvents(containerDiv) {
                         wipeData();
                     } else {
                         const secondNumberStartIndex = contentDiv.textContent.lastIndexOf(secondNumber);
-                        contentDiv.textContent = contentDiv.textContent.slice(0, secondNumberStartIndex);
+                        updateDisplayBox((text) => text.slice(0, secondNumberStartIndex));
                         updateNumberVariables(fn => fn, () => "");
                     }
                     break;
