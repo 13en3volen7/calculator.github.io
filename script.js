@@ -117,12 +117,12 @@ function attachButtonEvents(containerDiv) {
         }
     }
 
-    function tryWipeData(forceWipe = false, reset = true) {
+    function tryWipeData(forceWipe = false) {
         if (wasFinalResult || forceWipe) {
             lastOperator = "";
             updateNumberVariables(() => "", () => "", true);
             updateDisplayBox(firstNumber, secondNumber, lastOperator);
-            wasFinalResult = !reset;
+            wasFinalResult = false;
         }
     }
 
@@ -171,7 +171,6 @@ function attachButtonEvents(containerDiv) {
                     break;
 
                 case "equal":
-                    tryWipeData(false, false);
                     const result = operate(firstNumber, secondNumber, lastOperator);
                     const error = !isNumeric(result);
                     if (!error) {
@@ -179,9 +178,9 @@ function attachButtonEvents(containerDiv) {
                         updateNumberVariables(() => result, () => "", true);
                         updateDisplayBox(firstNumber, secondNumber, lastOperator);
                     } else {
-                        wasFinalResult = true;
                         updateDisplayBox(firstNumber, secondNumber, lastOperator, result);
                     }
+                    wasFinalResult = true;
                     break;
 
                 case "decimal":
