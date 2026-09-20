@@ -93,6 +93,10 @@ function attachButtonEvents(containerDiv) {
             contentDiv.textContent = msg;
             return;
         }
+        if (!firstNumber && lastOperator) {
+            lastOperator = "";
+            return;
+        }
         const preview = firstNumber + getOperatorDisplay(lastOperator) + secondNumber;
         if (preview.length > MAX_LENGTH) {
             return;
