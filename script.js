@@ -90,15 +90,15 @@ function attachButtonEvents(containerDiv) {
         contentDiv.textContent = preview;
     }
 
+    function wipeData() {
+        updateNumberVariables(() => "", () => "", true);
+        lastOperator = "";
+        contentDiv.textContent = "";
+    }
+
     optionsDiv.addEventListener("click", function (event) {
         const target = event.target;
         const className = target.className;
-
-        function wipeData() {
-            updateNumberVariables(() => "", () => "", true);
-            lastOperator = "";
-            contentDiv.textContent = "";
-        }
 
         if (className.startsWith("number")) {
             if (lastOperator === "=") {
