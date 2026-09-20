@@ -88,15 +88,12 @@ function attachButtonEvents(containerDiv) {
         }
     }
 
-    function updateDisplayBox(fn, sn, op, msg = null) {
+    function updateDisplayBox(msg = null) {
         if (msg && msg.length <= MAX_LENGTH) {
             contentDiv.textContent = msg;
             return;
         }
-        fn = fn || "";
-        sn = sn || "";
-        op = getOperatorDisplay(op) || "";
-        const preview = fn + op + sn;
+        const preview = firstNumber + getOperatorDisplay(lastOperator) + secondNumber;
         if (preview.length > MAX_LENGTH) {
             return;
         }
@@ -121,7 +118,7 @@ function attachButtonEvents(containerDiv) {
         if (wasFinalResult || forceWipe) {
             lastOperator = "";
             updateNumberVariables(() => "", () => "", true);
-            updateDisplayBox(firstNumber, secondNumber, lastOperator);
+            updateDisplayBox();
             wasFinalResult = false;
         }
     }
@@ -134,7 +131,7 @@ function attachButtonEvents(containerDiv) {
             tryWipeData();
             const number = className.slice(-1);
             updateNumberVariables(fn => fn + number, sn => sn + number);
-            updateDisplayBox(firstNumber, secondNumber, lastOperator);
+            updateDisplayBox();
         } else if (className.startsWith("operator")) {
             if (wasFinalResult) {
                 wasFinalResult = false;
@@ -145,16 +142,16 @@ function attachButtonEvents(containerDiv) {
                 const error = !isNumeric(result);
                 if (!error) {
                     updateNumberVariables(() => result, () => "", true);
-                    updateDisplayBox(firstNumber, secondNumber, lastOperator);
+                    updateDisplayBox();
                 } else {
                     wasFinalResult = true;
-                    updateDisplayBox(firstNumber, secondNumber, lastOperator, result);
+                    updateDisplayBox(result);
                 }
             }
             const operatorName = className.split("-").at(-1);
             lastOperator = formatOperator(operatorName);
             if (!wasFinalResult) {
-                updateDisplayBox(firstNumber, secondNumber, lastOperator);
+                updateDisplayBox();
             }
         } else {
             switch (className) {
@@ -167,7 +164,7 @@ function attachButtonEvents(containerDiv) {
                         return `${num}`;
                     }
                     updateNumberVariables(toggleNegative, toggleNegative);
-                    updateDisplayBox(firstNumber, secondNumber, lastOperator);
+                    updateDisplayBox();
                     break;
 
                 case "equal":
@@ -176,9 +173,9 @@ function attachButtonEvents(containerDiv) {
                     if (!error) {
                         lastOperator = "";
                         updateNumberVariables(() => result, () => "", true);
-                        updateDisplayBox(firstNumber, secondNumber, lastOperator);
+                        updateDisplayBox();
                     } else {
-                        updateDisplayBox(firstNumber, secondNumber, lastOperator, result);
+                        updateDisplayBox(result);
                     }
                     wasFinalResult = true;
                     break;
@@ -191,7 +188,7 @@ function attachButtonEvents(containerDiv) {
                         return num + ".";
                     }
                     updateNumberVariables(appendDecimalInner, appendDecimalInner);
-                    updateDisplayBox(firstNumber, secondNumber, lastOperator);
+                    updateDisplayBox();
                     break;
                 
                 case "del":
@@ -199,10 +196,10 @@ function attachButtonEvents(containerDiv) {
                     const isAnOperator = (char) => isNumeric(+char) && char !== "=" && char !== ".";
                     if (isAnOperator(lastChar)) {
                         lastOperator = "";
-                        updateDisplayBox(firstNumber, secondNumber, lastOperator);
+                        updateDisplayBox();
                     } else {
                         updateNumberVariables(fn => fn.slice(0, -1), sn => sn.slice(0, -1));
-                        updateDisplayBox(firstNumber, secondNumber, lastOperator);
+                        updateDisplayBox();
                     }
                     break;
 
@@ -211,7 +208,7 @@ function attachButtonEvents(containerDiv) {
                         tryWipeData(true);
                     } else {
                         updateNumberVariables(fn => fn, () => "");
-                        updateDisplayBox(firstNumber, secondNumber, lastOperator);
+                        updateDisplayBox();
                     }
                     break;
 
