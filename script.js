@@ -158,6 +158,18 @@ function attachButtonEvents(containerDiv) {
             }
         } else {
             switch (className) {
+                case "plus-minus":
+                    const toggleNegative = (num) => {
+                        if (num) {
+                            num = +num;
+                            num *= -1;
+                        }
+                        return `${num}`;
+                    }
+                    updateNumberVariables(toggleNegative, toggleNegative);
+                    updateDisplayBox(firstNumber, secondNumber, lastOperator);
+                    break;
+
                 case "equal":
                     tryWipeData(false, false);
                     const result = operate(firstNumber, secondNumber, lastOperator);
