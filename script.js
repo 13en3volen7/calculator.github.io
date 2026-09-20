@@ -37,6 +37,15 @@ function divide(a, b) {
 }
 
 function operate(a, b, op) {
+    if (!a && !b && !op) {
+        return "";
+    }
+    if (a && !b && !op) {
+        return a;
+    }
+    if (a && !b && op) {
+        return "SYNTAX ERROR";
+    }
     if (!isNumeric(a) || !isNumeric(b)) {
         return "SYNTAX ERROR";
     }
@@ -57,43 +66,64 @@ function attachButtonEvents(containerDiv) {
     let firstNumber = "";
     let secondNumber = "";
     let lastOperator = "";
+    let wasFinalResult = false;
     
-    function nameToSymbol(operatorName, ui = true) {
+    function formatOperator(operatorName) {
         switch (operatorName) {
             case "plus": return "+";
-            case "minus": return ui ? "−" : "-";
-            case "multiply": return ui ? "×" : "*";
-            case "divide": return ui ? "÷" : "/";
-            case "equal": return "=";
+            case "minus": return "-";
+            case "multiply": return "*";
+            case "divide": return "/";
+            default: return "";
         }
     }
 
-    function updateNumberVariables(firstNumberCallback, secondNumberCallback, forceUpdate = false) {
-        if (!forceUpdate) {
-            let editingFirstNumber = !lastOperator || lastOperator === "=";
-            if (editingFirstNumber) {
-                firstNumber = firstNumberCallback(firstNumber);
-            } else {
-                secondNumber = secondNumberCallback(secondNumber);
-            }
-        } else {
-            firstNumber = firstNumberCallback(firstNumber);
-            secondNumber = secondNumberCallback(secondNumber);
+    function getOperatorDisplay(operator) {
+        switch (operator) {
+            case "+": return "+";
+            case "-": return "−";
+            case "*": return "×";
+            case "/": return "÷";
+            default: return "";
         }
     }
 
-    function updateDisplayBox(callback) {
-        const preview = callback(contentDiv.textContent);
+    function updateDisplayBox(fn, sn, op, msg = null) {
+        if (msg && msg.length <= MAX_LENGTH) {
+            contentDiv.textContent = msg;
+            return;
+        }
+        fn = fn || "";
+        sn = sn || "";
+        op = getOperatorDisplay(op) || "";
+        const preview = fn + op + sn;
         if (preview.length > MAX_LENGTH) {
             return;
         }
         contentDiv.textContent = preview;
     }
 
-    function wipeData() {
-        updateNumberVariables(() => "", () => "", true);
-        lastOperator = "";
-        contentDiv.textContent = "";
+    function updateNumberVariables(fnCallback, snCallback, forceUpdate = false) {
+        if (!forceUpdate) {
+            const editingFirstNumber = !lastOperator || lastOperator === "=";
+            if (editingFirstNumber) {
+                firstNumber = fnCallback(firstNumber);
+            } else {
+                secondNumber = snCallback(secondNumber);
+            }
+        } else {
+            firstNumber = fnCallback(firstNumber);
+            secondNumber =  snCallback(secondNumber);
+        }
+    }
+
+    function tryWipeData(forceWipe = false, reset = true) {
+        if (wasFinalResult || forceWipe) {
+            lastOperator = "";
+            updateNumberVariables(() => "", () => "", true);
+            updateDisplayBox(firstNumber, secondNumber, lastOperator);
+            wasFinalResult = !reset;
+        }
     }
 
     optionsDiv.addEventListener("click", function (event) {
@@ -101,69 +131,81 @@ function attachButtonEvents(containerDiv) {
         const className = target.className;
 
         if (className.startsWith("number")) {
-            if (lastOperator === "=") {
-                wipeData();
-            }
+            tryWipeData();
             const number = className.slice(-1);
-            updateDisplayBox((text) => text + number);
             updateNumberVariables(fn => fn + number, sn => sn + number);
+            updateDisplayBox(firstNumber, secondNumber, lastOperator);
         } else if (className.startsWith("operator")) {
-            console.log(firstNumber, secondNumber, lastOperator);
+            if (wasFinalResult) {
+                wasFinalResult = false;
+            }
+            console.log(firstNumber, lastOperator, secondNumber);
             if (firstNumber && secondNumber && lastOperator) {
                 const result = operate(firstNumber, secondNumber, lastOperator);
-                if (!isNaN(+result)) {
+                const error = !isNumeric(result);
+                if (!error) {
                     updateNumberVariables(() => result, () => "", true);
+                    updateDisplayBox(firstNumber, secondNumber, lastOperator);
+                } else {
+                    wasFinalResult = true;
+                    updateDisplayBox(firstNumber, secondNumber, lastOperator, result);
                 }
-                updateDisplayBox(() => result);
             }
-
             const operatorName = className.split("-").at(-1);
-            const operatorUI = nameToSymbol(operatorName);
-            lastOperator = nameToSymbol(operatorName, false);
-            if (lastOperator !== "=") {
-                if (!contentDiv.textContent.length) {
-                    updateNumberVariables(fn => fn + lastOperator, sn => sn, true);
-                    lastOperator = "";
-                }
-                updateDisplayBox((text) => text + operatorUI);
+            lastOperator = formatOperator(operatorName);
+            if (!wasFinalResult) {
+                updateDisplayBox(firstNumber, secondNumber, lastOperator);
             }
         } else {
             switch (className) {
+                case "equal":
+                    tryWipeData(false, false);
+                    const result = operate(firstNumber, secondNumber, lastOperator);
+                    const error = !isNumeric(result);
+                    if (!error) {
+                        lastOperator = "";
+                        updateNumberVariables(() => result, () => "", true);
+                        updateDisplayBox(firstNumber, secondNumber, lastOperator);
+                    } else {
+                        wasFinalResult = true;
+                        updateDisplayBox(firstNumber, secondNumber, lastOperator, result);
+                    }
+                    break;
+
                 case "decimal":
                     const appendDecimalInner = num => {
                         if (num.includes(".")) {
                             return num;
                         }
-                        updateDisplayBox((text) => text + ".");
                         return num + ".";
                     }
                     updateNumberVariables(appendDecimalInner, appendDecimalInner);
+                    updateDisplayBox(firstNumber, secondNumber, lastOperator);
                     break;
                 
                 case "del":
                     const lastChar = contentDiv.textContent.at(-1);
-                    const isAnOperator = (char) => isNaN(+char) && char !== ".";
+                    const isAnOperator = (char) => isNumeric(+char) && char !== "=" && char !== ".";
                     if (isAnOperator(lastChar)) {
-                        const beforeLastChar = contentDiv.textContent.at(-2);
-                        lastOperator = isAnOperator(beforeLastChar) ? beforeLastChar : "";
+                        lastOperator = "";
+                        updateDisplayBox(firstNumber, secondNumber, lastOperator);
                     } else {
                         updateNumberVariables(fn => fn.slice(0, -1), sn => sn.slice(0, -1));
+                        updateDisplayBox(firstNumber, secondNumber, lastOperator);
                     }
-                    updateDisplayBox((text) => text.slice(0, -1));
                     break;
 
                 case "clear-entry":
                     if (!lastOperator) {
-                        wipeData();
+                        tryWipeData(true);
                     } else {
-                        const secondNumberStartIndex = contentDiv.textContent.lastIndexOf(secondNumber);
-                        updateDisplayBox((text) => text.slice(0, secondNumberStartIndex));
                         updateNumberVariables(fn => fn, () => "");
+                        updateDisplayBox(firstNumber, secondNumber, lastOperator);
                     }
                     break;
 
                 case "all-clear":
-                    wipeData();
+                    tryWipeData(true);
                     break;
             }
         }
@@ -178,9 +220,8 @@ function attachKeyboardEvents(containerDiv) {
     }
 
     document.body.addEventListener("keydown", (event) => {
-        console.log(`key=${event.key},code=${event.code}`);
         const key = event.key;
-        if (!isNaN(+key)) {
+        if (isNumeric(key)) {
             invoke(optionsDiv.querySelector(`.number-${key}`), "click");
         } else {
             switch (key) {
